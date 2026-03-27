@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Lista de Compras</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f5f5f5;
+            padding: 12px;
+            padding-bottom: 80px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        .btn-generate {
+            background-color: #34C759;
+            color: white;
+        }
+
+        .btn-reset {
+            background-color: #8E8E93;
+            color: white;
+        }
+
+        .category {
+            margin-bottom: 12px;
+        }
+
+        .category-header {
+            background-color: #e0e0e0;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 8px 10px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+
+        .item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #34C759;
+        }
+
+        .item-name {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .item-quantity input {
+            width: 40px;
+            padding: 4px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .item-unit {
+            font-size: 12px;
+            color: #888;
+            min-width: 30px;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff3b30;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0 4px;
+            margin-left: 6px;
+            opacity: 0.7;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .modal-content {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-copy {
+            background-color: #34C759;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-close {
+            background-color: transparent;
+            color: #666;
+            width: 100%;
+        }
+
+        .copy-success {
+            text-align: center;
+            color: #34C759;
+            font-weight: 600;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #888;
+            padding: 10px;
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .add-item-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 10px 12px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .add-item-section input[type="text"] {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .add-item-section input[type="number"] {
+            width: 50px;
+            padding: 10px 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .btn-add {
+            background-color: #007AFF;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-add:active {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lista de Compras</h1>
+
+    <div class="button-container">
+        <button class="btn btn-generate" onclick="generateList()">Generate List</button>
+        <button class="btn btn-reset" onclick="resetList()">Reset</button>
+    </div>
+
+    <div id="shopping-list"></div>
+
+    <div class="add-item-section">
+        <input type="text" id="new-item-name" placeholder="Add item..." />
+        <input type="number" id="new-item-qty" value="1" min="1" />
+        <button class="btn-add" onclick="addCustomItem()">+ Add</button>
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2>Lista Generada</h2>
+            <div class="modal-content" id="generated-list"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-copy" onclick="copyToClipboard()">Copy to Clipboard</button>
+                <button class="btn btn-close" onclick="closeModal()">Close</button>
+            </div>
+            <div class="copy-success" id="copy-success">Copied!</div>
+        </div>
+    </div>
+
+    <script>
+        const shoppingData = [
+            {
+                categoryEs: "Frutas y Verduras",
+                categoryFr: "Fruits et Légumes",
+                items: [
+                    { es: "Plátanos", fr: "Bananes", qty: 1, unit: "pack" },
+                    { es: "Cebollas", fr: "Oignons", qty: 2, unit: "" },
+                    { es: "Pimientos", fr: "Poivrons", qty: 2, unit: "" },
+                    { es: "Lechuga romana", fr: "Laitue romaine", qty: 1, unit: "" }
+                ]
+            },
+            {
+                categoryEs: "Carnes",
+                categoryFr: "Viandes",
+                items: [
+                    { es: "Pechuga de pollo", fr: "Blanc de poulet", qty: 1, unit: "" },
+                    { es: "Pechuga de pavo", fr: "Blanc de dinde", qty: 1, unit: "" },
+                    { es: "Carne de res", fr: "Pavé de bœuf", qty: 1, unit: "" }
+                ]
+            },
+            {
+                categoryEs: "Lácteos y Refrigerados",
+                categoryFr: "Produits Laitiers",
+                items: [
+                    { es: "Huevos", fr: "Œufs", qty: 12, unit: "" },
+                    { es: "Yogur griego", fr: "Yaourt grec", qty: 1, unit: "" },
+                    { es: "Hummus", fr: "Houmous", qty: 1, unit: "" },
+                    { es: "Queso Comté", fr: "Comté", qty: 1, unit: "" },
+                    { es: "Queso Philadelphia", fr: "Philadelphia", qty: 1, unit: "" },
+                    { es: "Queso parmesano", fr: "Parmesan", qty: 1, unit: "" },
+                    { es: "Queso emmental", fr: "Emmental râpé", qty: 1, unit: "" },
+                    { es: "Queso leerdammer", fr: "Leerdammer", qty: 1, unit: "" }
+                ]
+            },
+            {
+                categoryEs: "Panadería y Despensa",
+                categoryFr: "Boulangerie et Épicerie",
+                items: [
+                    { es: "Pan de molde", fr: "Pain de mie", qty: 1, unit: "" },
+                    { es: "Compota refri", fr: "Compote frigo", qty: 1, unit: "" },
+                    { es: "Compota bolsa", fr: "Compote gourde", qty: 1, unit: "" }
+                ]
+            },
+            {
+                categoryEs: "Cocina y Limpieza",
+                categoryFr: "Cuisine et Ménage",
+                items: []
+            },
+            {
+                categoryEs: "Lavandería y Baño",
+                categoryFr: "Lessive et Salle de bain",
+                items: []
+            },
+            {
+                categoryEs: "Otros",
+                categoryFr: "Autres",
+                items: [],
+                isCustomCategory: true
+            }
+        ];
+
+        function renderList() {
+            const container = document.getElementById('shopping-list');
+            container.innerHTML = '';
+
+            shoppingData.forEach((category, catIndex) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.textContent = `${category.categoryEs} / ${category.categoryFr}`;
+                categoryDiv.appendChild(header);
+
+                if (category.items.length === 0 && !category.isCustomCategory) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'empty-message';
+                    emptyMsg.textContent = 'No items yet';
+                    categoryDiv.appendChild(emptyMsg);
+                } else if (category.items.length === 0 && category.isCustomCategory) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'empty-message';
+                    emptyMsg.textContent = 'Add items below';
+                    categoryDiv.appendChild(emptyMsg);
+                } else {
+                    category.items.forEach((item, itemIndex) => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'item';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `item-${catIndex}-${itemIndex}`;
+                        checkbox.checked = item.checked || false;
+                        checkbox.addEventListener('change', () => {
+                            item.checked = checkbox.checked;
+                            saveState();
+                        });
+
+                        const nameLabel = document.createElement('label');
+                        nameLabel.className = 'item-name';
+                        nameLabel.htmlFor = checkbox.id;
+                        nameLabel.textContent = item.custom ? item.es : `${item.es} / ${item.fr}`;
+
+                        const qtyDiv = document.createElement('div');
+                        qtyDiv.className = 'item-quantity';
+
+                        const qtyInput = document.createElement('input');
+                        qtyInput.type = 'number';
+                        qtyInput.min = '1';
+                        qtyInput.value = item.qty;
+                        qtyInput.addEventListener('change', () => {
+                            item.qty = parseInt(qtyInput.value) || 1;
+                            saveState();
+                        });
+
+                        const unitSpan = document.createElement('span');
+                        unitSpan.className = 'item-unit';
+                        unitSpan.textContent = item.unit || '';
+
+                        qtyDiv.appendChild(qtyInput);
+                        qtyDiv.appendChild(unitSpan);
+
+                        itemDiv.appendChild(checkbox);
+                        itemDiv.appendChild(nameLabel);
+                        itemDiv.appendChild(qtyDiv);
+
+                        if (item.custom) {
+                            const deleteBtn = document.createElement('button');
+                            deleteBtn.className = 'delete-btn';
+                            deleteBtn.textContent = '×';
+                            deleteBtn.onclick = () => deleteItem(catIndex, itemIndex);
+                            itemDiv.appendChild(deleteBtn);
+                        }
+
+                        categoryDiv.appendChild(itemDiv);
+                    });
+                }
+
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        function generateList() {
+            let output = '';
+            let hasItems = false;
+
+            shoppingData.forEach(category => {
+                const checkedItems = category.items.filter(item => item.checked);
+                if (checkedItems.length > 0) {
+                    hasItems = true;
+                    output += `${category.categoryEs}:\n`;
+                    checkedItems.forEach(item => {
+                        const qtyStr = item.unit ? `${item.qty} ${item.unit}` : item.qty;
+                        const itemName = item.custom ? item.es : `${item.es} / ${item.fr}`;
+                        output += `- ${itemName} (${qtyStr})\n`;
+                    });
+                    output += '\n';
+                }
+            });
+
+            if (!hasItems) {
+                output = 'No items selected. Check the items you need!';
+            }
+
+            document.getElementById('generated-list').textContent = output.trim();
+            document.getElementById('modal').classList.add('active');
+            document.getElementById('copy-success').style.display = 'none';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('generated-list').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                document.getElementById('copy-success').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('copy-success').style.display = 'none';
+                }, 2000);
+            });
+        }
+
+        function resetList() {
+            shoppingData.forEach(category => {
+                category.items.forEach(item => {
+                    item.checked = false;
+                });
+            });
+            saveState();
+            renderList();
+        }
+
+        function addCustomItem() {
+            const nameInput = document.getElementById('new-item-name');
+            const qtyInput = document.getElementById('new-item-qty');
+            const name = nameInput.value.trim();
+            const qty = parseInt(qtyInput.value) || 1;
+
+            if (!name) return;
+
+            const otrosCategory = shoppingData.find(cat => cat.isCustomCategory);
+            if (otrosCategory) {
+                otrosCategory.items.push({
+                    es: name,
+                    fr: name,
+                    qty: qty,
+                    unit: '',
+                    checked: true,
+                    custom: true
+                });
+                saveState();
+                renderList();
+                nameInput.value = '';
+                qtyInput.value = '1';
+            }
+        }
+
+        function deleteItem(catIndex, itemIndex) {
+            shoppingData[catIndex].items.splice(itemIndex, 1);
+            saveState();
+            renderList();
+        }
+
+        function saveState() {
+            localStorage.setItem('shoppingList', JSON.stringify(shoppingData));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('shoppingList');
+            if (saved) {
+                const savedData = JSON.parse(saved);
+                savedData.forEach((savedCat, catIndex) => {
+                    if (shoppingData[catIndex]) {
+                        if (savedCat.isCustomCategory && shoppingData[catIndex].isCustomCategory) {
+                            shoppingData[catIndex].items = savedCat.items || [];
+                        } else {
+                            savedCat.items.forEach((savedItem, itemIndex) => {
+                                if (shoppingData[catIndex].items[itemIndex]) {
+                                    shoppingData[catIndex].items[itemIndex].checked = savedItem.checked;
+                                    shoppingData[catIndex].items[itemIndex].qty = savedItem.qty;
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        }
+
+        // Handle Enter key for adding items
+        document.getElementById('new-item-name').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addCustomItem();
+        });
+
+        // Initialize
+        loadState();
+        renderList();
+    </script>
+</body>
+</html>
