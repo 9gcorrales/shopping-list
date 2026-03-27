@@ -290,9 +290,9 @@
         const shoppingData = [
             {
                 categoryEs: "Frutas y Verduras",
-                categoryFr: "Fruits et L√©gumes",
+                categoryFr: "Fruits et Légumes",
                 items: [
-                    { es: "Pl√°tanos", fr: "Bananes", qty: 1, unit: "pack" },
+                    { es: "Plátanos", fr: "Bananes", qty: 1, unit: "pack" },
                     { es: "Cebollas", fr: "Oignons", qty: 2, unit: "" },
                     { es: "Pimientos", fr: "Poivrons", qty: 2, unit: "" },
                     { es: "Lechuga romana", fr: "Laitue romaine", qty: 1, unit: "" }
@@ -304,26 +304,26 @@
                 items: [
                     { es: "Pechuga de pollo", fr: "Blanc de poulet", qty: 1, unit: "" },
                     { es: "Pechuga de pavo", fr: "Blanc de dinde", qty: 1, unit: "" },
-                    { es: "Carne de res", fr: "Pav√© de b≈ìuf", qty: 1, unit: "" }
+                    { es: "Carne de res", fr: "Pavé de bœuf", qty: 1, unit: "" }
                 ]
             },
             {
-                categoryEs: "L√°cteos y Refrigerados",
+                categoryEs: "Lácteos y Refrigerados",
                 categoryFr: "Produits Laitiers",
                 items: [
-                    { es: "Huevos", fr: "≈íufs", qty: 12, unit: "" },
+                    { es: "Huevos", fr: "Œufs", qty: 12, unit: "" },
                     { es: "Yogur griego", fr: "Yaourt grec", qty: 1, unit: "" },
                     { es: "Hummus", fr: "Houmous", qty: 1, unit: "" },
-                    { es: "Queso Comt√©", fr: "Comt√©", qty: 1, unit: "" },
+                    { es: "Queso Comté", fr: "Comté", qty: 1, unit: "" },
                     { es: "Queso Philadelphia", fr: "Philadelphia", qty: 1, unit: "" },
                     { es: "Queso parmesano", fr: "Parmesan", qty: 1, unit: "" },
-                    { es: "Queso emmental", fr: "Emmental r√¢p√©", qty: 1, unit: "" },
+                    { es: "Queso emmental", fr: "Emmental râpé", qty: 1, unit: "" },
                     { es: "Queso leerdammer", fr: "Leerdammer", qty: 1, unit: "" }
                 ]
             },
             {
-                categoryEs: "Panader√≠a y Despensa",
-                categoryFr: "Boulangerie et √âpicerie",
+                categoryEs: "Panadería y Despensa",
+                categoryFr: "Boulangerie et Épicerie",
                 items: [
                     { es: "Pan de molde", fr: "Pain de mie", qty: 1, unit: "" },
                     { es: "Compota refri", fr: "Compote frigo", qty: 1, unit: "" },
@@ -332,11 +332,11 @@
             },
             {
                 categoryEs: "Cocina y Limpieza",
-                categoryFr: "Cuisine et M√©nage",
+                categoryFr: "Cuisine et Ménage",
                 items: []
             },
             {
-                categoryEs: "Lavander√≠a y Ba√±o",
+                categoryEs: "Lavandería y Baño",
                 categoryFr: "Lessive et Salle de bain",
                 items: []
             },
@@ -416,7 +416,7 @@
                         if (item.custom) {
                             const deleteBtn = document.createElement('button');
                             deleteBtn.className = 'delete-btn';
-                            deleteBtn.textContent = '√ó';
+                            deleteBtn.textContent = '×';
                             deleteBtn.onclick = () => deleteItem(catIndex, itemIndex);
                             itemDiv.appendChild(deleteBtn);
                         }
